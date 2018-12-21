@@ -5,6 +5,8 @@ import requests
 import random
 import json
 from datetime import datetime
+from bs4 import BeautifulSoup
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -28,7 +30,6 @@ def telegram():
     chat_id = tele_dict["message"]["from"]["id"] # user id
     text = tele_dict.get("message").get("text") # text contents
     # text = tele_dict["message"]["text"] # 이렇게 쓰면 이미지를 넣을 때 오류가 날 수 있다.
-    
     
     # 사용자가 이미지를 넣었는지 체크
     img = False
@@ -102,11 +103,23 @@ def telegram():
             bonus = lotto_dict["bnusNo"] # 보너스번호
             text = f"추첨일자 : {date}\n회차 : {turn}\n\n당첨 번호 : {week}\n보너스 번호 : {bonus}\n"
     
-    # elif (("현재" and "시간") or ("지금" and ("시간" or "몇시" or "몇 시")) in text:
-    #     now = datetime.now()
-    #     hour = now.hour
-    #     minute = now.minute
-    #     text = f'현재 시간은 {hour}시 {minute}분이오'
+    elif "실시간 검색어" in text:
+        silgum_url = "https://www.daum.net"
+        silgum_res = requests.get(silgum_url).text
+        
+        soup = BeautifulSoup(silgum_res, 'html.parser')
+        pick = soup.select('#mArticle > div.cmain_tmp > div.section_media > div.hotissue_builtin.hide > div.realtime_part > ol > li > div > div:nth-of-type(1) > span.txt_issue > a')
+        
+        now = datetime.now()
+        hour = now.hour
+        minute = now.minute
+        second = now.second
+        
+        text = f"현재 시각 : {hour}시 {minute}분 {second}초\n다음 실시간 검색어는\n"
+        i = 1
+        for p in pick:
+            text += (f"\n{i}. " + p.text)
+            i = i + 1
     
     else:
         text = "그런건 모르겠소. 4달러."
