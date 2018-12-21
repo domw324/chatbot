@@ -2,7 +2,7 @@ import os
 import requests
 import json
 
-token = os.getenv('TELE_TOKEN')
+token = os.getenv('TELE_TOKEN') # 토큰값을 환경변수에 숨기고 우회하기 위함
 method = 'getUpdates'
 
 # c9에서 telegram api 막음 ㅠㅠ 우회해야함
@@ -14,7 +14,7 @@ print(type(res))
 
 user_id = res["result"][0]["message"]["from"]["id"]
 
-msg = "4달라!!"
+msg = "4달라"
 method = 'sendMessage'
 msg_url = "https://api.hphk.io/telegram/bot{}/{}?chat_id={}&text={}".format(token, method, user_id, msg)
 
